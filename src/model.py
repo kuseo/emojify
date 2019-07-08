@@ -2,6 +2,7 @@ import numpy as np
 from emo_utils import *
 import emoji
 import numpy as np
+import json
 np.random.seed(0)
 from keras.models import Model
 from keras.layers import Dense, Input, Dropout, LSTM, Activation
@@ -106,8 +107,7 @@ print("Test accuracy = ", acc)
 plot_model(model, to_file='Emojify model.png')
 SVG(model_to_dot(model).create(prog='dot', format='svg'))
 
+model_json = model.to_json()
+with open("model.json", "w") as json_file:
+    json_file.write(model_json)
 model.save_weights("./model.h5")
-
-
-
-
