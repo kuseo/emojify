@@ -10,7 +10,7 @@ Please add more sentences and emoticon labels pair in /data/train_emoji.csv
 and modify the emoji_dictionary in emo_utils.py  
 and modify the output layer in model.py  
 <br/><br/>
-![fig1](https://github.com/tjrkddnr/emojify/blob/master/img/main_window.jpg?raw=true)
+![fig1](https://github.com/tjrkddnr/emojify/blob/master/img/main_window.JPG?raw=true)
 
 ## Architecture
 ![fig2](https://github.com/tjrkddnr/emojify/blob/master/src/trained%20model/Emojify%20model.png?raw=true)
