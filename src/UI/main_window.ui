@@ -2,13 +2,15 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
-  <property name="minimumSize">
-   <size>
-    <width>600</width>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>605</width>
     <height>500</height>
-   </size>
+   </rect>
   </property>
-  <property name="maximumSize">
+  <property name="minimumSize">
    <size>
     <width>600</width>
     <height>500</height>
@@ -163,7 +165,7 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>600</width>
+     <width>605</width>
      <height>21</height>
     </rect>
    </property>
