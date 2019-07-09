@@ -11,11 +11,11 @@ parser.add_argument("-s", "--sentence", type=str, default="not feeling happy",
 
 args = parser.parse_args()
 
-with open("./model.json", "r") as json_file:
+with open("./trained model/model.json", "r") as json_file:
     model_json = json_file.read()
 
 model = model_from_json(model_json)
-model.load_weights("./model.h5", "r")
+model.load_weights("./trained model/model.h5", "r")
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 def sentences_to_indices(X, word_to_index, max_len):
@@ -34,8 +34,7 @@ def sentences_to_indices(X, word_to_index, max_len):
     return X_indices
 
 word_to_index, _, _ = read_glove_vecs('../data/glove.6B.50d.txt')
-maxLen = 10 # maximum length of input sentence
-print(maxLen)
+maxLen = 10
 
 x_test = np.array([args.sentence])
 X_test_indices = sentences_to_indices(x_test, word_to_index, maxLen)

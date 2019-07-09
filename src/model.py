@@ -3,7 +3,7 @@ from emo_utils import *
 import emoji
 import numpy as np
 import json
-np.random.seed(0)
+import os
 from keras.models import Model
 from keras.layers import Dense, Input, Dropout, LSTM, Activation
 from keras.layers.embeddings import Embedding
@@ -12,22 +12,6 @@ from keras.initializers import glorot_uniform
 from IPython.display import SVG
 from keras.utils.vis_utils import model_to_dot
 from keras.utils import plot_model
-
-np.random.seed(1)
-
-X_train, Y_train = read_csv('../data/train_emoji.csv')
-X_test, Y_test = read_csv('../data/tesss.csv')
-
-
-maxLen = len(max(X_train, key=len).split()) # maximum length of input sentence
-
-index = 3
-print(X_train[index], label_to_emoji(Y_train[index]))
-
-Y_oh_train = convert_to_one_hot(Y_train, C = 5)
-Y_oh_test = convert_to_one_hot(Y_test, C = 5)
-
-word_to_index, index_to_word, word_to_vec_map = read_glove_vecs('../data/glove.6B.50d.txt')
 
 def sentences_to_indices(X, word_to_index, max_len):
     m = X.shape[0] # number of training examples
@@ -43,6 +27,7 @@ def sentences_to_indices(X, word_to_index, max_len):
             j = j + 1
     
     return X_indices
+
 
 def pretrained_embedding_layer(word_to_vec_map, word_to_index):
     vocab_len = len(word_to_index) + 1 # adding 1 to fit Keras embedding (requirement)
@@ -66,6 +51,7 @@ def pretrained_embedding_layer(word_to_vec_map, word_to_index):
     
     return embedding_layer
 
+
 def Emojify(input_shape, word_to_vec_map, word_to_index):
     sentence_indices = Input(input_shape, dtype='int32')
     
@@ -84,30 +70,54 @@ def Emojify(input_shape, word_to_vec_map, word_to_index):
         
     return model
 
+
+# load raw datasets
+X_train, Y_train = read_csv('../data/train_emoji.csv')
+X_test, Y_test = read_csv('../data/tesss.csv')
+
+# emoji mapping test
+index = 3
+print("emojy mapping test for index {}".format(index))
+print("sentence : " + X_train[index])
+print("emoji : " + label_to_emoji(Y_train[index]))
+
+# convert raw data to one_hot
+Y_oh_train = convert_to_one_hot(Y_train, C = 5)
+Y_oh_test = convert_to_one_hot(Y_test, C = 5)
+
+# load Glove data
+word_to_index, index_to_word, word_to_vec_map = read_glove_vecs('../data/glove.6B.50d.txt')
+
+# build model
+maxLen = len(max(X_train, key=len).split()) # maximum length of input sentence
 model = Emojify((maxLen,), word_to_vec_map, word_to_index)
 model.summary()
 
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-# prepare train data
+# prepare training data
 X_train_indices = sentences_to_indices(X_train, word_to_index, maxLen)
 Y_train_oh = convert_to_one_hot(Y_train, C = 5)
 
 # train model
 model.fit(X_train_indices, Y_train_oh, epochs = 50, batch_size = 32, shuffle=True)
 
+
+if not os.path.exists("./trained model/"):
+    os.makedirs("./trained model/")
+
 # evaluate model
 X_test_indices = sentences_to_indices(X_test, word_to_index, max_len = maxLen)
 Y_test_oh = convert_to_one_hot(Y_test, C = 5)
 loss, acc = model.evaluate(X_test_indices, Y_test_oh)
-print()
-print("Test accuracy = ", acc)
+with open("./trained model/evaluate.txt", "w") as evaluate:
+    evaluate.write("loss : " + str(loss) + "\n" + "Test accuracy : " + str(acc))
 
 # save model
-plot_model(model, to_file='Emojify model.png')
+plot_model(model, to_file='./trained model/Emojify model.png')
 SVG(model_to_dot(model).create(prog='dot', format='svg'))
 
 model_json = model.to_json()
-with open("model.json", "w") as json_file:
-    json_file.write(model_json)
-model.save_weights("./model.h5")
+with open("./trained model/model.json", "w") as json_file:
+    json_file.write(model_json) # model architecture
+model.save_weights("./trained model/model.h5") # model weights

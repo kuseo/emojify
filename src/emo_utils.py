@@ -20,12 +20,8 @@ def read_glove_vecs(glove_file):
             words_to_index[w] = i
             index_to_words[i] = w
             i = i + 1
+    print("done\n\n")
     return words_to_index, index_to_words, word_to_vec_map
-
-def softmax(x):
-    """Compute softmax values for each sets of scores in x."""
-    e_x = np.exp(x - np.max(x))
-    return e_x / e_x.sum()
 
 
 def read_csv(filename = '/data/emojify_data.csv'):
@@ -61,44 +57,3 @@ def label_to_emoji(label):
     """
     return emoji.emojize(emoji_dictionary[str(label)], use_aliases=True)
               
-    
-def print_predictions(X, pred):
-    print()
-    for i in range(X.shape[0]):
-        print(X[i], label_to_emoji(int(pred[i])))
-        
-        
-    
-def predict(X, Y, W, b, word_to_vec_map):
-    """
-    Given X (sentences) and Y (emoji indices), predict emojis and compute the accuracy of your model over the given set.
-    
-    Arguments:
-    X -- input data containing sentences, numpy array of shape (m, None)
-    Y -- labels, containing index of the label emoji, numpy array of shape (m, 1)
-    
-    Returns:
-    pred -- numpy array of shape (m, 1) with your predictions
-    """
-    m = X.shape[0]
-    pred = np.zeros((m, 1))
-    
-    for j in range(m):                       # Loop over training examples
-        
-        # Split jth test example (sentence) into list of lower case words
-        words = X[j].lower().split()
-        
-        # Average words' vectors
-        avg = np.zeros((50,))
-        for w in words:
-            avg += word_to_vec_map[w]
-        avg = avg/len(words)
-
-        # Forward propagation
-        Z = np.dot(W, avg) + b
-        A = softmax(Z)
-        pred[j] = np.argmax(A)
-        
-    print("Accuracy: "  + str(np.mean((pred[:] == Y.reshape(Y.shape[0],1)[:]))))
-    
-    return pred
