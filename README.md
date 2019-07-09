@@ -1,15 +1,14 @@
 # Emojify GUI version
 
 ## Introduction
-This program interprets the input sentence and matches the emoticons that fit the sentence.
+This program interprets the input sentence and matches the emoticons that fit the sentence.  
+Only four emoticons(❤️, ⚾, 😄, 😞, 🍴) are availabe.
 
-Only four emoticons(❤️, ⚾, 😄, 😞, 🍴) are availabe.<br/>
+In order for this program to be smarter, you need to enter more training data.
 
-In order for this program to be smarter, you need to enter more training data.<br/>
-
-Please add more sentences and emoticon labels pair in /data/train_emoji.csv
-and modify the emoji_dictionary in emo_utils.py
-and modify the output layer in model.py<br/>
+Please add more sentences and emoticon labels pair in /data/train_emoji.csv  
+and modify the emoji_dictionary in emo_utils.py  
+and modify the output layer in model.py  
 
 ## Keyword
-*Natural Language Processing, word Embedding, LSTM, Dropout, many to one language model*<br/>
+*Natural Language Processing, word Embedding, LSTM, Dropout, many to one language model*
