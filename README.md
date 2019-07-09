@@ -2,7 +2,7 @@
 
 ## Introduction
 This program interprets the input sentence and matches the emoticons that fit the sentence.  
-Only four emoticons(❤️, ⚾, 😄, 😞, 🍴) are availabe.
+Only five emoticons(❤️, ⚾, 😄, 😞, 🍴) are availabe.
 
 In order for this program to be smarter, you need to enter more training data.
 
