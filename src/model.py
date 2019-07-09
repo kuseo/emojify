@@ -100,7 +100,7 @@ X_train_indices = sentences_to_indices(X_train, word_to_index, maxLen)
 Y_train_oh = convert_to_one_hot(Y_train, C = 5)
 
 # train model
-model.fit(X_train_indices, Y_train_oh, epochs = 50, batch_size = 32, shuffle=True)
+model.fit(X_train_indices, Y_train_oh, epochs = 100, batch_size = 16, shuffle=True)
 
 
 if not os.path.exists("./trained model/"):
