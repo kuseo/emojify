@@ -1,11 +1,16 @@
 import sys
 import string
 import numpy as np
+
 from keras.models import Model
 from keras.models import model_from_json
+
 from emo_utils import *
+from PyQt5 import QtGui
+from PyQt5.QtCore import QObject, pyqtSignal, QEventLoop
 from PyQt5.QtWidgets import *
 from PyQt5 import uic
+
 
 def sentences_to_indices(X, word_to_index, max_len):
     m = X.shape[0] # number of training examples
@@ -32,7 +37,26 @@ def setElements(Window, state):
 
 form_class = uic.loadUiType("./UI/main_window.ui")[0]
 
-
+class StdoutRedirect(QObject):
+    printOccur = pyqtSignal(str, str, name="print")
+ 
+    def __init__(self, *param):
+        QObject.__init__(self, None)
+        self.daemon = True
+        self.sysstdout = sys.stdout.write
+        self.sysstderr = sys.stderr.write
+ 
+    def stop(self):
+        sys.stdout.write = self.sysstdout
+        sys.stderr.write = self.sysstderr
+ 
+    def start(self):
+        sys.stdout.write = self.write
+        sys.stderr.write = lambda msg : self.write(msg, color="red")
+ 
+    def write(self, s, color="black"):
+        sys.stdout.flush()
+        self.printOccur.emit(s, color)
 
 class MyWindow(QMainWindow, form_class):
     def __init__(self):
@@ -50,6 +74,17 @@ class MyWindow(QMainWindow, form_class):
         self.word_to_index = {}
         self.maxLen = 10
         self.loaded = False
+
+        self._stdout = StdoutRedirect()
+        self._stdout.start()
+        self._stdout.printOccur.connect(lambda x : self._append_text(x))
+
+
+    def _append_text(self, msg):
+        self.textBrowser_2.moveCursor(QtGui.QTextCursor.End)
+        self.textBrowser_2.insertPlainText(msg)
+        # refresh textedit show, refer) https://doc.qt.io/qt-5/qeventloop.html#ProcessEventsFlag-enum
+        QApplication.processEvents(QEventLoop.ExcludeUserInputEvents)
 
 
     def setElements(self, state):
@@ -82,6 +117,8 @@ class MyWindow(QMainWindow, form_class):
 
     def btn_2_emojify_clicked(self):
         if self.loaded == False:
+            msgbox = QMessageBox(self)
+            msgbox.critical(self, "Critical", "You need to load the model first.", QMessageBox.Yes)
             return
         
         original_input = self.textEdit.toPlainText()
@@ -96,8 +133,16 @@ class MyWindow(QMainWindow, form_class):
         x_test = np.array([filtered_input])
         try:
             X_test_indices = sentences_to_indices(x_test, self.word_to_index, self.maxLen)
-        except:
-            # unknown word, too many words
+        except KeyError as k:
+            print(type(k).__name__)
+            print("Unknown word : ", k, "\n")
+            return
+        except IndexError as i:
+            print(type(i).__name__)
+            print("Maximum length of input sentence is 10", "\n")
+            return
+        except Exception as e:
+            print(type(e).__name__, ' : ', e, "\n")
             return
 
         self.textBrowser_1.setPlainText(original_input +' '+  label_to_emoji(np.argmax(self.model.predict(X_test_indices))))
@@ -105,7 +150,8 @@ class MyWindow(QMainWindow, form_class):
 
 
     def menu_help_about_clicked(self):
-        pass
+        msgbox = QMessageBox(self)
+        msgbox.information(self, "About", "<a href='https://github.com/tjrkddnr/emojify'>https://github.com/tjrkddnr/emojify</a>", QMessageBox.Yes)
         return
 
 if __name__ == "__main__":
