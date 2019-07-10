@@ -1,3 +1,6 @@
 .vscode/*
 src/__pycache__/*
 bfg-1.13.0.jar
+src/build/*
+src/dist/*
+src/main_window.spec
